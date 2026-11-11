@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <ImageView
+            android:id="@+id/preview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:background="#171C22"
+            android:contentDescription="ตัวอย่างรูปที่ประทับวันที่แล้ว"
+            android:maxHeight="380dp"
+            android:minHeight="200dp"
+            android:scaleType="fitCenter" />
+
+        <TextView
+            android:id="@+id/status"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="12dp"
+            android:paddingBottom="12dp"
+            android:text="เลือกรูป แล้วกดบันทึก วันที่ถ่ายจะถูกประทับให้อัตโนมัติ"
+            android:textSize="16sp" />
+
+        <Button
+            android:id="@+id/pick"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:text="เลือกรูป"
+            android:textSize="18sp" />
+
+        <Button
+            android:id="@+id/save"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:enabled="false"
+            android:text="บันทึกรูป"
+            android:textSize="18sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="24dp"
+            android:text="รูปแบบวันที่"
+            android:textStyle="bold" />
+
+        <Spinner
+            android:id="@+id/fmt"
+            android:layout_width="match_parent"
+            android:layout_height="48dp" />
+
+        <CheckBox
+            android:id="@+id/time"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:text="แสดงเวลาด้วย" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="12dp"
+            android:text="ตำแหน่ง"
+            android:textStyle="bold" />
+
+        <Spinner
+            android:id="@+id/pos"
+            android:layout_width="match_parent"
+            android:layout_height="48dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="12dp"
+            android:text="สีตัวอักษร"
+            android:textStyle="bold" />
+
+        <Spinner
+            android:id="@+id/col"
+            android:layout_width="match_parent"
+            android:layout_height="48dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="12dp"
+            android:text="ขนาดตัวอักษร"
+            android:textStyle="bold" />
+
+        <SeekBar
+            android:id="@+id/size"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:max="30" />
+    </LinearLayout>
+</ScrollView>
