@@ -135,7 +135,7 @@ input[type="color"]{width:38px;height:32px;padding:0;border:1px solid var(--line
 
   <section id="results" hidden>
     <h2>รูปที่ประทับวันที่แล้ว</h2>
-    <p class="hint">คลิกขวาที่รูป แล้วเลือก "บันทึกรูปภาพเป็น" (บนมือถือให้กดค้างที่รูป)</p>
+    <p class="hint">กดค้างที่รูป แล้วเลือกบันทึกลงรูปภาพ (บนคอมพิวเตอร์ให้คลิกขวา แล้วเลือก "บันทึกรูปภาพเป็น")</p>
     <div id="resultList"></div>
   </section>
 
@@ -510,9 +510,9 @@ async function shareFiles(){
   if (!pendingShare) return;
   try {
     await navigator.share({files: pendingShare});
-    say("เรียบร้อย ถ้าเลือก \"บันทึกรูปภาพ\" รูปจะอยู่ในแอปรูปภาพ");
+    say("ถ้าในหน้าต่างแชร์ไม่มี \"บันทึกรูปภาพ\" ให้กดค้างที่รูปด้านล่าง แล้วเลือกบันทึกลงรูปภาพ");
   } catch(e){
-    if (e && e.name === "AbortError") say("ยังไม่ได้บันทึก กด \"บันทึกลงเครื่อง\" เพื่อลองอีกครั้ง");
+    if (e && e.name === "AbortError") say("กด \"บันทึกลงเครื่อง\" เพื่อเปิดหน้าต่างแชร์อีกครั้ง หรือกดค้างที่รูปด้านล่างเพื่อบันทึกทีละรูป");
     else say("รูปพร้อมแล้ว กด \"บันทึกลงเครื่อง\" แล้วเลือก \"บันทึกรูปภาพ\"");
   }
 }
@@ -542,6 +542,7 @@ async function saveHosted(items){
   }
   if (isApple && navigator.canShare && navigator.canShare({files: files})){
     pendingShare = files;
+    files.forEach((f, i) => showResult(names[i], f));
     const sb = $("shareBtn");
     sb.textContent = files.length > 1 ? "บันทึกลงเครื่อง " + files.length + " รูป" : "บันทึกลงเครื่อง";
     sb.hidden = false;
