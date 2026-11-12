@@ -62,9 +62,13 @@ header p{margin:0;color:var(--muted)}
 #resultList figure{margin:0;display:flex;flex-direction:column;gap:4px}
 #resultList img{max-width:100%;height:auto;border-radius:4px;display:block}
 #resultList figcaption{font-size:13px;color:var(--muted);overflow-wrap:anywhere}
-.more>summary{cursor:pointer;color:var(--muted);font-weight:500;padding:6px 2px;border-radius:6px}
+.more>summary{cursor:pointer;list-style:none;display:flex;align-items:center;flex-wrap:wrap;gap:4px 10px;padding:12px 14px;border:1px solid var(--accent);border-radius:8px;background:var(--panel);color:var(--accent);font-weight:600;font-size:16px}
+.more>summary::-webkit-details-marker{display:none}
+.more>summary::after{content:"\25BE";margin-left:auto;font-size:18px;line-height:1}
+.more[open]>summary::after{content:"\25B4"}
+.more>summary small{color:var(--muted);font-weight:400;font-size:13px}
 .more>summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-.more[open]>summary{margin-bottom:10px;color:var(--ink)}
+.more[open]>summary{margin-bottom:10px}
 
 .stage{background:var(--stage);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:10px;align-items:center;border:2px dashed transparent}
 .stage.drag{border-color:var(--accent)}
@@ -151,7 +155,7 @@ input[type="color"]{width:38px;height:32px;padding:0;border:1px solid var(--line
   </section>
 
   <details class="more">
-    <summary>ปรับแต่ง (รูปแบบวันที่ สี ตำแหน่ง ขนาด)</summary>
+    <summary>ปรับแต่งตัวอักษรวันที่ <small>กดเพื่อเปลี่ยนรูปแบบ สี ตำแหน่ง ขนาด</small></summary>
     <div class="panel">
       <div class="field">
         <label for="fmt">รูปแบบวันที่</label>
