@@ -52,6 +52,10 @@ h1 span{font-family:var(--font-mono);color:var(--accent);font-weight:400;margin-
 header p{margin:0;color:var(--muted)}
 .big{padding:14px 22px;font-size:17px;font-weight:600;flex:1 1 200px;justify-content:center}
 [hidden]{display:none!important}
+.datepick{border:0;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:8px;align-items:center;min-width:0}
+.datepick legend{font-weight:600;font-size:13px;padding:0 0 6px}
+.datepick .chip span{padding:9px 14px;font-size:14px;background:var(--panel)}
+.datepick input[type="datetime-local"]{width:auto;flex:1 1 220px;background:var(--panel)}
 #results{display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1px solid var(--accent);border-radius:10px;padding:14px}
 #results h2{font-family:var(--font-display);font-size:18px;margin:0}
 #resultList{display:flex;flex-direction:column;gap:14px}
@@ -122,6 +126,13 @@ input[type="color"]{width:38px;height:32px;padding:0;border:1px solid var(--line
   </div>
 
   <div class="strip" id="strip" aria-label="รูปที่เลือก" hidden></div>
+
+  <fieldset class="datepick">
+    <legend>วันที่ที่จะประทับ</legend>
+    <label class="chip"><input type="radio" name="dmode" id="dmode-auto" value="auto" checked><span>ใช้วันที่ถ่ายของรูป</span></label>
+    <label class="chip"><input type="radio" name="dmode" id="dmode-custom" value="custom"><span>กำหนดวันที่เอง</span></label>
+    <input type="datetime-local" id="customDate" aria-label="วันที่ที่จะประทับลงทุกรูป" hidden>
+  </fieldset>
 
   <div class="bar">
     <label class="btn big primary" id="pickBtn"><span id="pickLabel">เลือกรูป</span>
@@ -422,6 +433,13 @@ async function addSample(){
 
 /* ---------- rendering ---------- */
 const current = () => state.items.find(i => i.id === state.selected) || null;
+/* The date actually stamped: one date for every photo when the user sets it, else each photo's own. */
+function customDate(){
+  if (!$("dmode-custom").checked) return null;
+  const v = $("customDate").value, d = v ? new Date(v) : null;
+  return d && !isNaN(d) ? d : null;
+}
+const dateFor = it => customDate() || it.date;
 const localValue = d => d.getFullYear() + "-" + p2(d.getMonth()+1) + "-" + p2(d.getDate()) + "T" + p2(d.getHours()) + ":" + p2(d.getMinutes());
 function renderStrip(){
   const strip = $("strip"); strip.textContent = "";
@@ -431,7 +449,7 @@ function renderStrip(){
     b.type = "button"; b.className = "thumb"; b.setAttribute("aria-pressed", String(it.id === state.selected));
     b.title = it.name;
     const img = document.createElement("img"); img.src = it.thumb; img.alt = it.name;
-    const d = document.createElement("span"); d.className = "d"; d.textContent = stampText(it.date, Object.assign({}, s, {time:false}));
+    const d = document.createElement("span"); d.className = "d"; d.textContent = stampText(dateFor(it), Object.assign({}, s, {time:false}));
     const pill = document.createElement("span"); pill.className = "pill " + it.source; pill.textContent = SOURCE_LABEL[it.source];
     b.append(img, d, pill);
     b.addEventListener("click", () => { state.selected = it.id; renderStrip(); renderPreview(); });
@@ -454,11 +472,11 @@ async function renderPreview(){
   preview.width = Math.round(bmp.width*k); preview.height = Math.round(bmp.height*k);
   pctx.drawImage(bmp, 0, 0, preview.width, preview.height);
   const s = settings();
-  drawStamp(pctx, preview.width, preview.height, stampText(it.date, s), s);
+  drawStamp(pctx, preview.width, preview.height, stampText(dateFor(it), s), s);
   const foot = $("stageFoot"); foot.textContent = "";
   const name = document.createElement("b"); name.textContent = it.name;
   const info = document.createElement("span");
-  info.textContent = it.w + " × " + it.h + " px · " + ({exif:"วันที่ถ่ายจาก EXIF", file:"ไม่มี EXIF ใช้วันที่ของไฟล์", manual:"วันที่ที่แก้เอง", sample:"วันที่ตัวอย่าง"})[it.source];
+  info.textContent = it.w + " × " + it.h + " px · " + (customDate() ? "วันที่ที่กำหนดเอง ใช้กับทุกรูป" : {exif:"วันที่ถ่ายจาก EXIF", file:"ไม่มี EXIF ใช้วันที่ของไฟล์", manual:"วันที่ที่แก้เอง", sample:"วันที่ตัวอย่าง"}[it.source]);
   foot.append(name, info);
   $("manual").value = localValue(it.date);
   $("manualHint").textContent = it.source === "manual" ? "แก้เองแล้ว ล้างช่องนี้เพื่อกลับไปใช้ค่าที่อ่านได้" : "แก้ได้ถ้าวันที่ที่อ่านมาไม่ถูก กดรูปเล็กเพื่อเลือกรูปที่จะแก้";
@@ -483,7 +501,7 @@ async function exportItem(it){
   const g = c.getContext("2d");
   g.drawImage(bmp, 0, 0); bmp.close();
   const s = settings();
-  drawStamp(g, c.width, c.height, stampText(it.date, s), s);
+  drawStamp(g, c.width, c.height, stampText(dateFor(it), s), s);
   const blob = await new Promise(r => c.toBlob(r, "image/jpeg", 0.93));
   c.width = c.height = 1;
   if (!blob) throw new Error("รูปใหญ่เกินกว่าที่เบราว์เซอร์นี้ประมวลผลได้");
@@ -645,6 +663,13 @@ $("clearBtn").addEventListener("click", async () => {
 const refresh = () => { renderStrip(); renderPreview(); };
 ["fmt","showTime","size"].forEach(id => $(id).addEventListener("input", refresh));
 document.querySelectorAll('input[name="pos"],input[name="font"],input[name="col"]').forEach(el => el.addEventListener("change", refresh));
+document.querySelectorAll('input[name="dmode"]').forEach(el => el.addEventListener("change", () => {
+  const on = $("dmode-custom").checked, box = $("customDate");
+  box.hidden = !on;
+  if (on && !box.value) box.value = localValue(new Date());
+  refresh();
+}));
+$("customDate").addEventListener("input", refresh);
 $("colCustom").addEventListener("input", () => {
   document.querySelectorAll('input[name="col"]').forEach(el => el.checked = false);
   refresh();
